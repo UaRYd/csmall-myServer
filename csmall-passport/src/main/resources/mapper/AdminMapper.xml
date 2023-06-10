@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.tedu.csmall.passport.mapper.AdminMapper">
+
+    <!-- AdminLoginInfoVO getLoginInfoByUsername(String username); -->
+    <select id="getLoginInfoByUsername" resultMap="LoginInfoResultMap">
+        SELECT ams_admin.id, ams_admin.username, ams_admin.password, ams_admin.enable,
+               ams_permission.value
+        FROM ams_admin
+                 LEFT JOIN ams_admin_role on ams_admin.id = ams_admin_role.admin_id
+                 LEFT JOIN ams_role_permission on ams_admin_role.role_id = ams_role_permission.role_id
+                 LEFT JOIN ams_permission on ams_role_permission.permission_id=ams_permission.id
+        WHERE username=#{username}
+        GROUP BY ams_permission.value;
+    </select>
+
+    <resultMap id="LoginInfoResultMap" type="cn.tedu.csmall.passport.pojo.vo.AdminLoginInfoVO">
+        <id column="id" property="id"></id>
+        <result column="username" property="username"></result>
+        <result column="password" property="password"></result>
+        <result column="enable" property="enable"></result>
+        <collection property="permissions" ofType="java.lang.String">
+            <constructor>
+                <arg column="value"></arg>
+            </constructor>
+        </collection>
+    </resultMap>
+
+    <!-- List<AlbumListItemVO> list(); -->
+    <select id="list" resultType="cn.tedu.csmall.passport.pojo.vo.AdminListItemVO">
+        SELECT id, nickname, description, avatar
+        FROM ams_admin
+        ORDER BY id
+    </select>
+
+</mapper>
